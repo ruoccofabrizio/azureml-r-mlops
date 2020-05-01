@@ -1,0 +1,13 @@
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+variables:
+  imageName: 'your-docker-image-name'
+
+steps:
+- task: Docker@2
+  displayName: Build an image
+  inputs:
+    repository: $(imageName)
+    command: build
+    Dockerfile: ./Docker/Dockerfile
