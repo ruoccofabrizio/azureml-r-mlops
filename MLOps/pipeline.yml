@@ -1,0 +1,31 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-16.04'
+
+container: fruocco/r-azuremlsdk-github:latest
+
+steps:
+
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: |
+        Rscript './code/install-packages.R'
+    displayName: 'Install packages'
+    
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: |
+        Rscript './code/train-and-register-model.R'  --tenant_id $(TENANT_ID) --service_principal_id $(SERVICE_PRINCIPAL_ID) --service_principal_password $(SERVICE_PRINCIPAL_PASSWORD) --aml_workspace $(AML_WORKSPACE) --aml_subscription_id $(AML_SUBSCRIPTION_ID) --aml_resource_group $(AML_RESOURCE_GROUP) --aml_cluster $(AML_CLUSTER)
+    displayName: 'Train model'
+
+
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: |
+        Rscript './code/deploy.R'  --tenant_id $(TENANT_ID) --service_principal_id $(SERVICE_PRINCIPAL_ID) --service_principal_password $(SERVICE_PRINCIPAL_PASSWORD) --aml_workspace $(AML_WORKSPACE) --aml_subscription_id $(AML_SUBSCRIPTION_ID) --aml_resource_group $(AML_RESOURCE_GROUP) --aml_model $(AML_MODEL)
+    displayName: 'Deploy model'
